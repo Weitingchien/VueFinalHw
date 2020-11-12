@@ -1,0 +1,5 @@
+@import "~bootstrap/scss/functions";//載入bootstrap套用變數的方法
+@import "./helpers/variables";//載入自訂義變數
+@import "~bootstrap/scss/bootstrap";//載入node_modules裡的scss資料夾裡的bootstrap.scss
+@import "./dashboard.scss";
+@import "./Products.scss";
