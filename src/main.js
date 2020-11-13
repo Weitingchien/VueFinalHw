@@ -16,6 +16,7 @@ import App from './App'
 import router from './router'//自動找到資料夾中的 index.js 檔案
 import './bus';
 import currencyFilter from './filters/currency';
+import dateFilter from './filters/date';
 //自訂義
 
 Vue.use(VueAxios, axios);
@@ -23,6 +24,7 @@ Vue.config.productionTip = false;
 Vue.component('Loading', Loading);//全域的方式啟用Loading這個元件，前面為自訂義名稱，供其他元件使用時會使用這個自訂義的名稱。
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 Vue.filter('currency', currencyFilter);
+Vue.filter('date', dateFilter);
 library.add(faUserSecret, faSpinner, faBoxOpen, faListAlt, faTicketAlt, faShoppingCart, faTrashAlt);
 /* eslint-disable no-new */
 new Vue({

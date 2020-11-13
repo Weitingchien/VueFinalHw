@@ -195,7 +195,6 @@ export default {
         });
       },
       openModal(isNew, item) {
-          $('#productModal').modal('show');//打開模板
           if (isNew) {//按下建立新的產品按鈕時，觸發if(isNew)等同(isNew== true)
               this.tempProduct = {};//把欄位清空，以免裡面存留上次編輯時的資料內容
               this.isNew = true;//區分編輯與新增內容時的狀態，目的是要用來切換$http[httpMethod]的狀態是(商品建立)的post還是(修改產品)的put
@@ -204,7 +203,7 @@ export default {
               //編輯產品時，因為都是指向temProduct這個空物件，又因每次所選的編輯產品都不同，所以要使用Object.assign，再建立一個空物件，並將item加進這個空物件來避免傳參考的特性
               this.isNew = false;
           }
-          $('#productModal').modal('show');
+          $('#productModal').modal('show');//打開模板
       },
       opendeleteModal(item) {//item為目前點選的產品資料
           $(document).on('click' ,'.deleteModal', function (){//在第一次點擊之後，dom沒有重新加載的解決辦法

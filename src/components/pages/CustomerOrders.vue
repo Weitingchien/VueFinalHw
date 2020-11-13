@@ -42,7 +42,7 @@
         <th>單價</th>
       </thead>
       <tbody>
-        <tr v-for="list in carts" :key="list.id">
+        <tr v-for="list in customercart.carts" :key="list.id">
           <td class="align-middle">
             <button type="button" class="btn btn-outline-danger btn-sm">
                 <font-awesome-icon icon="trash-alt" @click.prevent="removeCartItem(list.id)"/>
@@ -58,18 +58,18 @@
       <tfoot>
         <tr>
           <td colspan="3" class="text-right">總計</td>
-          <td class="text-right">{{ carts.total }}</td>
+          <td class="text-right">{{ customercart.total }}</td>
         </tr>
-        <tr v-if="carts.total !== carts.final_total">
+        <tr v-if="customercart.total !== customercart.final_total">
           <td colspan="3" class="text-right text-success">折扣價</td>
-          <td class="text-right text-success">{{ carts.final_total }}</td>
+          <td class="text-right text-success">{{ customercart.final_total }}</td>
         </tr>
       </tfoot>
     </table>
     <div class="input-group mb-3 input-group-sm">
-      <input type="text" class="form-control" placeholder="請輸入優惠碼"/>
+      <input type="text" class="form-control" v-model="coupon_code" placeholder="請輸入優惠碼"/>
       <div class="input-group-append">
-        <button class="btn btn-outline-secondary" type="button">套用優惠碼</button>
+        <button class="btn btn-outline-secondary" type="button" @click="addCouponCode">套用優惠碼</button>
       </div>
     </div>
         <!-- modal -->
@@ -122,19 +122,20 @@ export default {
         return {
             products: [],
             product: {},
-            carts: [],
+            customercart: [],
             status: {
                 loadingItem: '',
             },
             isLoading: false,
+            coupon_code: '',
         };
     },
     methods: {
         getProducts() {
             const vm = this;
-            const url = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/products/?page=:page`;//取得商品列表API
+            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/products/?page=:page`;//取得商品列表API
             vm.isLoading = true;
-            this.$http.get(url).then((response) => {
+            this.$http.get(api).then((response) => {
                 vm.products = response.data.products;
                 console.log(response);
                 vm.isLoading = false;
@@ -142,9 +143,9 @@ export default {
         },
         getProduct(id) {
             const vm = this;
-            const url = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/product/${id}`;//單一商品細節API
+            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/product/${id}`;//單一商品細節API
             vm.status.loadingItem = id;
-            this.$http.get(url).then((response) => {
+            this.$http.get(api).then((response) => {
                 vm.product = response.data.product;
                 $('#productModal').modal('show');
                 console.log(response);
@@ -153,13 +154,13 @@ export default {
         },
         addtoCart(id, qty = 1){
             const vm = this;
-            const url = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart`;//加入購物車API
+            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart`;//加入購物車API
             vm.status.loadingItem = id;
             const cart = {//定義資料結構
                 product_id: id,
                 qty
             }
-            this.$http.post(url, { data: cart }).then((response) => {
+            this.$http.post(api, { data: cart }).then((response) => {
                 console.log(response);
                 vm.status.loadingItem = '';
                 vm.getCart();
@@ -168,19 +169,32 @@ export default {
         },
         getCart() {
             const vm = this;
-            const url = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart`;//取得購物車列表API
+            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart`;//取得購物車列表API
             vm.isLoading = true;
-            this.$http.get(url).then((response) => {
-                vm.carts = response.data.data.carts;
-                console.log(vm.carts);
+            this.$http.get(api).then((response) => {
+                vm.customercart = response.data.data;
+                console.log(vm.customercart,response.data.data.carts);
                 vm.isLoading = false;
             });
         },
         removeCartItem(id) {
             const vm = this;
-            const url = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart/${id}`;//取得購物車列表API
+            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart/${id}`;//取得購物車列表API
             vm.isLoading = true;
-            this.$http.delete(url).then(() => {
+            this.$http.delete(api).then(() => {
+                vm.getCart();
+                vm.isLoading = false;
+            });
+        },
+        addCouponCode() {
+            const vm = this;
+            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/coupon`;//取得購物車列表API
+            const coupon = {
+                code: vm.coupon_code
+            }
+            vm.isLoading = true;
+            this.$http.post(api, { data: coupon }).then((response) => {
+                console.log(response);
                 vm.getCart();
                 vm.isLoading = false;
             });

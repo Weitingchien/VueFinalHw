@@ -1,6 +1,6 @@
 <template>
   <div>
-      <loading :active.sync="isLoading"></loading>
+    <loading :active.sync="isLoading"></loading>
     <table class="table mt-4">
     <thead>
         <tr>
@@ -23,26 +23,31 @@
         </tr>
     </tbody>
     </table>
-    </div>
+   </div>
 </template>
 
 
 <script>
+import Page from '../Pagination';
+
 export default {
     data() {
         return {
             orderlist: [],
+            pagination: {},
             isLoading: false,
         }
     },
     methods: {
       getOrderList(page = 1) {
         const vm = this;
-        const url = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/orders?page=${page}`;
+        const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/orders?page=${page}`;
         vm.isLoading = true;
-        this.$http.get(url).then((response) => {
+        this.$http.get(api).then((response) => {
             console.log(response.data);
             vm.orderlist = response.data.orders;
+            vm.pagination = response.data.pagination;
+            console.log(vm.pagination);
             vm.isLoading = false;
         });
       },  
