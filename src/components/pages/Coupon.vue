@@ -18,17 +18,20 @@
         <tr v-for="(item, key) in couponGet" :key="key">
             <td>{{ item.title }}</td>
             <td>{{ item.percent }}%</td>
-            <td>{{ item.due_date | date }}</td>
+            <td>{{ item.due_date }}</td>
             <td>
                 <span class="text-success" v-if="item.is_enabled === 1">啟用</span>
                 <span class="text-muted" v-else >未啟用</span>
             </td>
             <td>
                 <button class="btn btn-outline-primary btn-sm" @click="openModal(false, item)">編輯</button>
+                <button class="btn btn-sm deleteModal" @click="deleteCoupon(item.id)">刪除</button>
             </td>
         </tr>
     </tbody>
     </table>
+    <!--分頁-->
+    <Page :pageArr="pagination" @emit="getCoupon"></Page>
 <!-- Modal -->
 <div class="modal" id="productModal" tabindex="-1" role="dialog"
   aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -80,7 +83,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" @click="updateCoupon">更新優惠券</button>
+        <button type="button" class="btn btn-primary" @click="updateCoupon">確認</button>
       </div>
     </div>
   </div>
@@ -97,7 +100,6 @@ export default {
         return {
             isLoading: false,
             isNew: false,
-            due_date: new Date(),
             pagination: {},
             couponGet: {},
             couponAdminProduct: {
@@ -109,45 +111,52 @@ export default {
             },
         }
     },
+    components: {
+        Page
+    },
     methods: {
-        getCoupon(page = 1) {
+        getCoupon(page = 1) {//取得優惠券列表
             const vm = this;
             vm.isLoading = true;
             const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupons?page=${page}`;
             this.$http.get(api).then((response) => {
                 vm.couponGet = response.data.coupons;
+                vm.pagination = response.data.pagination;
                 console.log(response);
                 vm.isLoading = false;
             })
         },
-        openModal(isNew, item) {
+        openModal(isNew, item) {//打開模板
             if(isNew){
-                this.couponAdminProduct = {};
-                this.due_date = new Date();
+                this.couponAdminProduct = {};//建立優惠券時清空輸入欄位
                 this.isNew = true;
             }else{
-                this.couponAdminProduct = Object.assign({}, item);
+                this.couponAdminProduct = Object.assign({}, item);//編輯時避免傳參考
                 this.isNew = false;
             }
             $('#productModal').modal('show');
         },
-        updateCoupon() {
+        updateCoupon() {//建立優惠券與修改優惠券
             const vm = this;
+            let api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupon`;
+            let httpMethod = 'post';
             if(!vm.isNew){
-                console.log('編輯');
-                const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupon/${vm.couponAdminProduct.id}`;
-                this.$http.put(api, { data: vm.couponAdminProduct }).then((response) =>{
-                    $('#productModal').modal('hide');
-                    vm.getCoupon();
-                });
-            }else{
-                console.log('建立');
-                const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupon`;
-                    this.$http.post(api, { data: vm.couponAdminProduct }).then((response) =>{
-                    $('#productModal').modal('hide');
-                    vm.getCoupon();
-                });
+                httpMethod = 'put';
+                api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupon/${vm.couponAdminProduct.id}`;
             }
+                this.$http[httpMethod](api, { data: vm.couponAdminProduct }).then((response) =>{
+                $('#productModal').modal('hide');
+                 vm.getCoupon();
+            });
+        },
+        deleteCoupon(id) {//刪除優惠券
+            const vm = this;
+            vm.isLoading = true;
+            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/coupon/${id}`;
+            this.$http.delete(api).then((response) => {
+                vm.getCoupon();
+                vm.isLoading = false;
+            });
         },
     },
     created() {

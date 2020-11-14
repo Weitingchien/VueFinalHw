@@ -50,6 +50,9 @@
           </td>
           <td class="align-middle">
             {{ list.product.title }}
+            <div class="text-success" v-if="list.coupon">
+              已套用優惠券
+            </div>
           </td>
           <td class="align-middle">{{ list.qty }}/{{ list.product.unit }}</td>
           <td class="align-middle text-right">{{ list.final_total }}</td>
@@ -169,7 +172,7 @@ export default {
         },
         getCart() {
             const vm = this;
-            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart`;//取得購物車列表API
+            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart`;
             vm.isLoading = true;
             this.$http.get(api).then((response) => {
                 vm.customercart = response.data.data;
@@ -179,7 +182,7 @@ export default {
         },
         removeCartItem(id) {
             const vm = this;
-            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart/${id}`;//取得購物車列表API
+            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/cart/${id}`;
             vm.isLoading = true;
             this.$http.delete(api).then(() => {
                 vm.getCart();
@@ -188,7 +191,7 @@ export default {
         },
         addCouponCode() {
             const vm = this;
-            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/coupon`;//取得購物車列表API
+            const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/coupon`;
             const coupon = {
                 code: vm.coupon_code
             }
