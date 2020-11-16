@@ -16,13 +16,19 @@
             <td>{{ item.create_at | date }}</td>
             <td>{{ item.user.email }}</td>
             <td class="text-right">
-                <p>{{ item.products }} 數量: {{ item.products.qty }}</p>
+                <ul class="list-unstyled">
+                    <li v-for="{product, i} in item.products" :key="i">
+                        {{ product.product.title }} 數量: {{ product.qty }}
+                        {{ product.product.unit }}
+                    </li>
+                </ul>
             </td>
-            <td class="text-right">{{ item.total }}</td>
-            <td class="text-right"></td>
+            <td>{{ item.total | currency }}</td>
+            <td></td>
         </tr>
     </tbody>
     </table>
+    <Page :pageArr="pagination" @emit="getOrderList"></Page>
    </div>
 </template>
 
@@ -38,13 +44,16 @@ export default {
             isLoading: false,
         }
     },
+    components: {
+        Page,
+    },
     methods: {
       getOrderList(page = 1) {
         const vm = this;
         const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/admin/orders?page=${page}`;
         vm.isLoading = true;
         this.$http.get(api).then((response) => {
-            console.log(response.data);
+            console.log(response.data.orders);
             vm.orderlist = response.data.orders;
             vm.pagination = response.data.pagination;
             console.log(vm.pagination);

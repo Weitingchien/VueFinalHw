@@ -10,7 +10,9 @@ import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 import 'bootstrap';//這邊bootstrap 還需要npm install --save jquery popper.js(因為Bootstrap團隊開發時有針對webpack做優化，因此只需要直接import 'bootstrap'即可抓到下載BS資源)
 //npm 套件內容
-
+import { ValidationObserver, ValidationProvider, extend, localize, configure } from 'vee-validate';//ValidationProvider是input驗證元件、ValidationObserver是整體<form>驗證元件
+import TW from 'vee-validate/dist/locale/zh_TW.json'
+import * as rules from 'vee-validate/dist/rules';//把驗證規則全部導入
 
 import App from './App'
 import router from './router'//自動找到資料夾中的 index.js 檔案
@@ -19,13 +21,33 @@ import currencyFilter from './filters/currency';
 import dateFilter from './filters/date';
 //自訂義
 
+//全部規則導出並加到vee-validate的擴充裡面
+Object.keys(rules).forEach((rule) => {
+  extend(rule, rules[rule]);
+});
+
+//運用繁體中文的語系檔
+localize('zh_TW', TW);
+
 Vue.use(VueAxios, axios);
 Vue.config.productionTip = false;
 Vue.component('Loading', Loading);//全域的方式啟用Loading這個元件，前面為自訂義名稱，供其他元件使用時會使用這個自訂義的名稱。
 Vue.component('font-awesome-icon', FontAwesomeIcon);
+Vue.component('ValidationObserver', ValidationObserver)// 將 VeeValidate 完整表單 驗證工具載入 作為全域註冊
+Vue.component('ValidationProvider', ValidationProvider)// 將 VeeValidate input 驗證工具載入 作為全域註冊
+
+// Class 設定檔案
+configure({
+  classes: {
+    valid: 'is-valid',//針對bootstrap所進行驗證的class name的設定
+    invalid: 'is-invalid'
+  }
+});
+
 Vue.filter('currency', currencyFilter);
 Vue.filter('date', dateFilter);
 library.add(faUserSecret, faSpinner, faBoxOpen, faListAlt, faTicketAlt, faShoppingCart, faTrashAlt);
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',//表示這個 vue instance 創建後會掛載取代 id="app" 的元素
