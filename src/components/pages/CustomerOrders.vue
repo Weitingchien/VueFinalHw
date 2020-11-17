@@ -118,7 +118,7 @@
 <div class="my-5 row justify-content-center">
   <!-- validation-observer 驗證整體表單 -->
   <validation-observer class="col-md-6" v-slot="{ invalid }">
-<form @submit.prevent="creteOrder">
+<form @submit.prevent="createOrder">
     <!--v-slot 稱為插槽，可把外部元件的data傳到裡面slot的內容、此input規則為required:必填欄位、email:格式為Email，可加入多個驗證規則-->
     <validation-provider rules="required|email" v-slot="{ errors, classes }">
   <div class="form-group">
@@ -158,7 +158,7 @@
     <textarea class="form-control" id="FormControlTextarea1" col="30" rows="10" v-model="form.message"></textarea>
 </div>
   <div class="text-right">
-    <button class="btn btn-danger" @click="creteOrder" :disabled="invalid">送出訂單</button><!--沒有驗證成功的情況下，表單的按鈕無法按-->
+    <button class="btn btn-danger" :disabled="invalid">送出訂單</button><!--沒有驗證成功的情況下，表單的按鈕無法按-->
   </div>
 </form>
 </validation-observer>
@@ -316,7 +316,7 @@ export default {
         vm.isLoading = false;
       });
     },
-    creteOrder() {
+    createOrder() {
       const vm = this;
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMPATH}/order`;
       const order = vm.form;
