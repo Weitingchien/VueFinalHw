@@ -5,6 +5,7 @@ import Dashboard from '@/components/Dashboard';
 import Login from '@/components/pages/Login';
 import Products from '@/components/pages/Products';
 import CustomerOrder from '@/components/pages/CustomerOrders';
+import CustomerCheckout from '@/components/pages/CustomerCheckout';
 import OrderList from '@/components/pages/OrderList';
 import Coupon from '@/components/pages/Coupon';
 
@@ -62,6 +63,11 @@ export default new Router({//匯出給main.js使用
           path: 'customer_order',
           name: 'CustomerOrder',
           component: CustomerOrder,
+        },
+        {
+          path: 'customer_checkout/:orderId',
+          name: 'CustomerCheckout',
+          component: CustomerCheckout,
         },
       ]
     }
